@@ -1,6 +1,8 @@
 {
-  "private": false,
   "displayName": "Homebridge Tuya IR Platform",
+  "publishConfig": {
+    "access": "public"
+  },
   "name": "@cbrunnkvist/homebridge-tuya-ir",
   "version": "1.2.0",
   "description": "Allows homebridge to control Tuya IR Blaster based devices",

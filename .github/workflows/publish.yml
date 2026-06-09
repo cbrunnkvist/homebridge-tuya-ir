@@ -64,7 +64,7 @@ jobs:
           if npm view "@cbrunnkvist/homebridge-tuya-ir@${VERSION}" version 2>/dev/null; then
             echo "@cbrunnkvist/homebridge-tuya-ir@${VERSION} already published — skipping."
           else
-            npm publish --provenance --access public
+            npm publish --provenance
           fi
 
       - name: Create GitHub Release

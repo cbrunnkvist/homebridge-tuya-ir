@@ -1,0 +1,74 @@
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to publish (e.g. v1.2.1). If empty, uses the push tag."
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve tag
+        id: tag
+        run: |
+          TAG_INPUT="${{ inputs.tag }}"
+          if [ -n "$TAG_INPUT" ]; then
+            echo "tag=$TAG_INPUT" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Verify tag matches package version
+        run: |
+          node -e "const pkg=require('./package.json'); const tag='${{ steps.tag.outputs.tag }}'; const expected='v'+pkg.version; if(tag!==expected){ console.error('Tag '+tag+' does not match package.json version '+pkg.version+' (expected '+expected+')'); process.exit(1); }"
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "@cbrunnkvist/homebridge-tuya-ir@${VERSION}" version 2>/dev/null; then
+            echo "@cbrunnkvist/homebridge-tuya-ir@${VERSION} already published — skipping."
+          else
+            npm publish --provenance --access public
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          generate_release_notes: true

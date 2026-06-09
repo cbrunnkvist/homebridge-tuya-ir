@@ -8,7 +8,7 @@ const GenericAccessory_1 = require("./lib/accessories/GenericAccessory");
 const DoItYourselfAccessory_1 = require("./lib/accessories/DoItYourselfAccessory");
 const LightAccessory_1 = require("./lib/accessories/LightAccessory");
 const PLATFORM_NAME = 'TuyaIR';
-const PLUGIN_NAME = 'homebridge-tuya-ir';
+const PLUGIN_NAME = '@cbrunnkvist/homebridge-tuya-ir';
 const CLASS_DEF = {
     infrared_ac: AirConditionerAccessory_1.AirConditionerAccessory,
     infrared_fan: FanAccessory_1.FanAccessory,

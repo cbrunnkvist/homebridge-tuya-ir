@@ -7,18 +7,20 @@
 
 # Homebridge Tuya IR
 [![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
-[![npm](https://img.shields.io/npm/v/homebridge-tuya-ir.svg)](https://www.npmjs.com/package/homebridge-tuya-ir)
-![GitHub](https://img.shields.io/github/license/prasad-edlabadka/homebridge-tuya-ir)
-[![npm](https://img.shields.io/npm/dt/homebridge-tuya-ir.svg)](https://www.npmjs.com/package/homebridge-tuya-ir)
-![GitHub issues](https://img.shields.io/github/issues-raw/prasad-edlabadka/homebridge-tuya-ir)
-![GitHub pull requests](https://img.shields.io/github/issues-pr-raw/prasad-edlabadka/homebridge-tuya-ir)
+[![npm](https://img.shields.io/npm/v/@cbrunnkvist/homebridge-tuya-ir.svg)](https://www.npmjs.com/package/@cbrunnkvist/homebridge-tuya-ir)
+![GitHub](https://img.shields.io/github/license/cbrunnkvist/homebridge-tuya-ir)
+[![npm](https://img.shields.io/npm/dt/@cbrunnkvist/homebridge-tuya-ir.svg)](https://www.npmjs.com/package/@cbrunnkvist/homebridge-tuya-ir)
+![GitHub issues](https://img.shields.io/github/issues-raw/cbrunnkvist/homebridge-tuya-ir)
+![GitHub pull requests](https://img.shields.io/github/issues-pr-raw/cbrunnkvist/homebridge-tuya-ir)
 
-![GitHub contributors](https://img.shields.io/github/contributors-anon/prasad-edlabadka/homebridge-tuya-ir)
-![GitHub last commit](https://img.shields.io/github/last-commit/prasad-edlabadka/homebridge-tuya-ir)
+![GitHub contributors](https://img.shields.io/github/contributors-anon/cbrunnkvist/homebridge-tuya-ir)
+![GitHub last commit](https://img.shields.io/github/last-commit/cbrunnkvist/homebridge-tuya-ir)
 
 
 
 Control your Tuya Smart IR based devices in HomeKit. Also works with Smart Home IR Blaster. You can add multiple Smart IR device to single configuration.
+
+> **Why this fork?** The original plugin suffered from DNS resolution errors under Node 20+, had no exponential backoff on API failures (risking login/refresh lockouts and Homebridge crashes during network blips), and its engines range was unnecessarily narrow. This fork adds DNS caching with connection reuse, token refresh hardening, reactive retry logic, crash-safety guards, and polling backoff — all aimed at making the plugin just keep working reliably.
 
 ## Supported Devices
 * Air Conditioner (Only pre-configured vendor. No DIY devices)
@@ -31,12 +33,12 @@ Control your Tuya Smart IR based devices in HomeKit. Also works with Smart Home 
 
 #### Option 1: Install via Homebridge Config UI X:
 
-Search for "Tuya IR" in [homebridge-config-ui-x](https://github.com/oznu/homebridge-config-ui-x) and install `homebridge-tuya-ir`.
+Search for "Tuya IR" in [homebridge-config-ui-x](https://github.com/oznu/homebridge-config-ui-x) and install `@cbrunnkvist/homebridge-tuya-ir`.
 
 #### Option 2: Manually Install:
 
 ```
-sudo npm install -g homebridge-tuya-ir
+sudo npm install -g @cbrunnkvist/homebridge-tuya-ir
 ```
 ## Add Smart IR and Remotes
 Download Tuya Smart app and add your Smart IR device based on OEM documentation and add remotes you want to control using the Smart IR device.

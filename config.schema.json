@@ -5,31 +5,28 @@
   "singular": true,
   "schema": {
     "type": "object",
+    "required": ["name", "tuyaAPIClientId", "tuyaAPISecret", "deviceRegion"],
     "properties": {
       "name": {
         "title": "Name",
         "type": "string",
-        "required": true,
         "default": "TuyaIR"
       },
       "tuyaAPIClientId": {
         "title": "Client ID",
         "type": "string",
-        "required": true,
         "default": "",
         "description": "Your Tuya IOT cloud project's client ID"
       },
       "tuyaAPISecret": {
         "title": "Client Secret",
         "type": "string",
-        "required": true,
         "default": "",
         "description": "Your Tuya IOT cloud project's secret"
       },
       "deviceRegion": {
         "title": "Device Region",
         "type": "string",
-        "required": true,
         "default": "",
         "oneOf": [
           {
@@ -64,18 +61,17 @@
         "items": {
           "type": "object",
           "title": "Smart IR Details",
+          "required": ["deviceId", "autoFetchRemotesFromServer"],
           "properties": {
             "deviceId": {
               "title": "Smart IR Device ID",
               "type": "string",
-              "required": true,
               "default": "",
               "description": "Device Id of the Smart IR Device"
             },
             "autoFetchRemotesFromServer": {
               "title": "Fetch configured remotes automatically?",
               "type": "boolean",
-              "required": true,
               "default": true,
               "description": "Uncheck this box if your IR remotes are not discovered automatically. You will need to add your remote IDs manually below"
             },
@@ -85,29 +81,26 @@
               "items": {
                 "type": "object",
                 "title": "Remote Details",
+                "required": ["id", "diy"],
                 "properties": {
                   "id": {
                     "title": "Remote Id",
                     "type": "string",
-                    "description": "Remote ID",
-                    "required": true
+                    "description": "Remote ID"
                   },
                   "diy": {
                     "title": "Is this Remote DIY?",
-                    "type": "boolean",
-                    "required": true
+                    "type": "boolean"
                   },
                   "model": {
                     "title": "Model",
                     "type": "string",
-                    "required": false,
                     "default": "Unknown",
                     "description": "Model of the Remote"
                   },
                   "brand": {
                     "title": "Brand",
                     "type": "string",
-                    "required": false,
                     "default": "Unknown",
                     "description": "Brand of the Remote"
                   }

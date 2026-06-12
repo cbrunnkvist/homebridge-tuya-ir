@@ -81,7 +81,6 @@
               "items": {
                 "type": "object",
                 "title": "Remote Details",
-                "required": ["id", "diy"],
                 "properties": {
                   "id": {
                     "title": "Remote Id",

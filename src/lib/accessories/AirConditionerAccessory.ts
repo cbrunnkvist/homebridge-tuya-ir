@@ -212,7 +212,6 @@ export class AirConditionerAccessory extends BaseAccessory {
   }
 
   setOn(value: CharacteristicValue) {
-    if (this.acStates.On == (value as boolean)) return;
     const command = (value as boolean) ? 1 : 0;
     this.sendACCommand(
       this.parentId,

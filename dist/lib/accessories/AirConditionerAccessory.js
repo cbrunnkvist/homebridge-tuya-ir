@@ -132,8 +132,6 @@ class AirConditionerAccessory extends BaseAccessory_1.BaseAccessory {
         });
     }
     setOn(value) {
-        if (this.acStates.On == value)
-            return;
         const command = value ? 1 : 0;
         this.sendACCommand(this.parentId, this.accessory.context.device.id, 'power', command, (body) => {
             if (!body.success) {

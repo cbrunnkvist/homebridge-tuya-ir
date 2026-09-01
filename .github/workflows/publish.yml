@@ -49,6 +49,21 @@ jobs:
         run: |
           node -e "const pkg=require('./package.json'); const tag='${{ steps.tag.outputs.tag }}'; const expected='v'+pkg.version; if(tag!==expected){ console.error('Tag '+tag+' does not match package.json version '+pkg.version+' (expected '+expected+')'); process.exit(1); }"
 
+      - name: Validate CHANGELOG entry
+        id: changelog
+        run: |
+          VERSION="${{ steps.tag.outputs.tag }}"
+          VERSION_NUM="${VERSION#v}"
+          if ! grep -q "^## \[${VERSION_NUM}\]" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no entry for ${VERSION_NUM}. Add a ## [${VERSION_NUM}] section before publishing."
+            exit 1
+          fi
+          # Extract the changelog entry for this version (from its heading to the next ## or end of file)
+          RELEASE_BODY=$(sed -n "/^## \[${VERSION_NUM}\]/,/^## \[/p" CHANGELOG.md | sed '$ d')
+          # Write to file for the release step
+          echo "$RELEASE_BODY" > /tmp/release-body.md
+          echo "version=${VERSION_NUM}" >> "$GITHUB_OUTPUT"
+
       - name: Install
         run: npm ci
 
@@ -59,16 +74,22 @@ jobs:
         run: npm run build
 
       - name: Publish
+        id: publish
         run: |
           VERSION=$(node -p "require('./package.json').version")
           if npm view "@cbrunnkvist/homebridge-tuya-ir@${VERSION}" version 2>/dev/null; then
+            echo "already_published=true" >> "$GITHUB_OUTPUT"
             echo "@cbrunnkvist/homebridge-tuya-ir@${VERSION} already published — skipping."
           else
             npm publish --provenance
+            echo "already_published=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Create GitHub Release
+        if: success()
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
-          generate_release_notes: true
+          name: ${{ steps.tag.outputs.tag }}
+          body_path: /tmp/release-body.md
+          generate_release_notes: false

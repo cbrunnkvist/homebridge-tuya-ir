@@ -9,7 +9,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/cbrunnkvist/homebridge-tuya-ir.git"
+    "url": "https://github.com/cbrunnkvist/homebridge-tuya-ir.git"
   },
   "bugs": {
     "url": "https://github.com/cbrunnkvist/homebridge-tuya-ir/issues"

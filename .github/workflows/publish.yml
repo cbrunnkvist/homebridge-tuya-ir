@@ -41,9 +41,12 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org
           cache: npm
+
+      - name: Update npm for trusted publishing
+        run: npm install --global npm@^11.5.1
 
       - name: Verify tag matches package version
         run: |

@@ -81,7 +81,7 @@ jobs:
             echo "already_published=true" >> "$GITHUB_OUTPUT"
             echo "@cbrunnkvist/homebridge-tuya-ir@${VERSION} already published — skipping."
           else
-            npm publish --provenance
+            npm publish --provenance --access public
             echo "already_published=false" >> "$GITHUB_OUTPUT"
           fi
 

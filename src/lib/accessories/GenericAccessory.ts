@@ -57,7 +57,15 @@ export class GenericAccessory extends BaseAccessory {
 
     private sendCommand(command: string | number, cb) {
         const commandObj = { 'raw_key': command };
+        this.log.info(
+            `Sending switch command: raw_key=${command} to ${this.accessory.displayName}`,
+        );
         APIInvocationHelper.invokeTuyaIrApi(this.log, this.configuration, this.sendCommandAPIURL, "POST", commandObj, (body) => {
+            if (!body.success) {
+                this.log.error(
+                    `Switch command raw_key=${command} failed for ${this.accessory.displayName}: ${body.msg}`,
+                );
+            }
             cb(body);
         });
     }

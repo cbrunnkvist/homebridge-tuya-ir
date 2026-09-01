@@ -202,7 +202,7 @@ export class AirConditionerAccessory extends BaseAccessory {
             AirConditionerAccessory.MAX_POLL_MS,
           );
           this.log.error(
-            `Failed to get AC status due to error ${body.msg}` +
+            `Failed to get AC status for ${this.accessory.displayName}: ${body.msg}` +
             ` (retry ${this.pollFailures}, next poll in ${Math.round(nextPollMs / 1000)}s)`,
           );
         }
@@ -347,7 +347,10 @@ export class AirConditionerAccessory extends BaseAccessory {
       code: command,
       value: value,
     };
-    this.log.debug(JSON.stringify(commandObj));
+    this.log.info(
+      `Sending AC command: ${command}=${value} to ${this.accessory.displayName} ` +
+      `(hub=${deviceId}, remote=${remoteId})`,
+    );
     APIInvocationHelper.invokeTuyaIrApi(
       this.log,
       this.configuration,
@@ -356,6 +359,11 @@ export class AirConditionerAccessory extends BaseAccessory {
       'POST',
       commandObj,
       (body) => {
+        if (!body.success) {
+          this.log.error(
+            `AC command ${command}=${value} failed for ${this.accessory.displayName}: ${body.msg}`,
+          );
+        }
         cb(body);
       },
     );

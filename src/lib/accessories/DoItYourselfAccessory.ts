@@ -104,7 +104,9 @@ export class DoItYourselfAccessory extends BaseAccessory {
   }
 
   sendLearningCode(deviceId: string, remoteId: string, code: string, cb) {
-    this.log.debug('Sending Learning Code');
+    this.log.info(
+      `Sending learning code to ${this.accessory.displayName} (hub=${deviceId}, remote=${remoteId})`,
+    );
     APIInvocationHelper.invokeTuyaIrApi(
       this.log,
       this.configuration,
@@ -113,6 +115,11 @@ export class DoItYourselfAccessory extends BaseAccessory {
       'POST',
       { code },
       (body) => {
+        if (!body.success) {
+          this.log.error(
+            `Learning code failed for ${this.accessory.displayName}: ${body.msg}`,
+          );
+        }
         cb(body);
       },
     );

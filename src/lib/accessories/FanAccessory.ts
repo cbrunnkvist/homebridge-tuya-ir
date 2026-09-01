@@ -152,7 +152,15 @@ export class FanAccessory extends BaseAccessory {
 
     private sendFanCommand(command: string | number, cb) {
         const commandObj = { [this.sendCommandKey]: command };
+        this.log.info(
+            `Sending fan command: ${this.sendCommandKey}=${command} to ${this.accessory.displayName}`,
+        );
         APIInvocationHelper.invokeTuyaIrApi(this.log, this.configuration, this.sendCommandAPIURL, "POST", commandObj, (body) => {
+            if (!body.success) {
+                this.log.error(
+                    `Fan command ${this.sendCommandKey}=${command} failed for ${this.accessory.displayName}: ${body.msg}`,
+                );
+            }
             cb(body);
         });
     }

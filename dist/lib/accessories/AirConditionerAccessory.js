@@ -125,15 +125,13 @@ class AirConditionerAccessory extends BaseAccessory_1.BaseAccessory {
             else {
                 this.pollFailures++;
                 nextPollMs = Math.min(AirConditionerAccessory.BASE_POLL_MS * Math.pow(2, this.pollFailures - 1), AirConditionerAccessory.MAX_POLL_MS);
-                this.log.error(`Failed to get AC status due to error ${body.msg}` +
+                this.log.error(`Failed to get AC status for ${this.accessory.displayName}: ${body.msg}` +
                     ` (retry ${this.pollFailures}, next poll in ${Math.round(nextPollMs / 1000)}s)`);
             }
             setTimeout(this.refreshStatus.bind(this), nextPollMs);
         });
     }
     setOn(value) {
-        if (this.acStates.On == value)
-            return;
         const command = value ? 1 : 0;
         this.sendACCommand(this.parentId, this.accessory.context.device.id, 'power', command, (body) => {
             if (!body.success) {
@@ -208,9 +206,13 @@ class AirConditionerAccessory extends BaseAccessory_1.BaseAccessory {
             code: command,
             value: value,
         };
-        this.log.debug(JSON.stringify(commandObj));
+        this.log.info(`Sending AC command: ${command}=${value} to ${this.accessory.displayName} ` +
+            `(hub=${deviceId}, remote=${remoteId})`);
         APIInvocationHelper_1.APIInvocationHelper.invokeTuyaIrApi(this.log, this.configuration, this.configuration.apiHost +
             `/v2.0/infrareds/${deviceId}/air-conditioners/${remoteId}/command`, 'POST', commandObj, (body) => {
+            if (!body.success) {
+                this.log.error(`AC command ${command}=${value} failed for ${this.accessory.displayName}: ${body.msg}`);
+            }
             cb(body);
         });
     }

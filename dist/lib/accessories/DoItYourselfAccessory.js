@@ -58,9 +58,12 @@ class DoItYourselfAccessory extends BaseAccessory_1.BaseAccessory {
         });
     }
     sendLearningCode(deviceId, remoteId, code, cb) {
-        this.log.debug('Sending Learning Code');
+        this.log.info(`Sending learning code to ${this.accessory.displayName} (hub=${deviceId}, remote=${remoteId})`);
         APIInvocationHelper_1.APIInvocationHelper.invokeTuyaIrApi(this.log, this.configuration, this.configuration.apiHost +
             `/v2.0/infrareds/${deviceId}/remotes/${remoteId}/learning-codes`, 'POST', { code }, (body) => {
+            if (!body.success) {
+                this.log.error(`Learning code failed for ${this.accessory.displayName}: ${body.msg}`);
+            }
             cb(body);
         });
     }

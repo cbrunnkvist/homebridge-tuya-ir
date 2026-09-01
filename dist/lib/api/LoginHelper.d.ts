@@ -6,8 +6,6 @@ export declare class LoginHelper extends BaseHelper {
     private accessToken;
     private refreshToken;
     private retryCount;
-    private static readonly BASE_RETRY_MS;
-    private static readonly MAX_RETRY_MS;
     private refreshInProgress;
     private refreshTimer;
     private constructor();
@@ -28,7 +26,9 @@ export declare class LoginHelper extends BaseHelper {
     private scheduleProactiveRefresh;
     private extractAccessTokenFromAPIResponse;
     /**
-     * Retry login with exponential backoff: 30 s → 60 s → 120 s → ... up to 5 min.
+     * Called when login fails. Logs the error and increments backoff state.
+     * Retry scheduling is handled by the caller (TuyaIRDiscovery) to ensure
+     * the discovery chain stays connected.
      */
     private handleLoginError;
 }

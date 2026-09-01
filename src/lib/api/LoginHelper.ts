@@ -10,10 +10,8 @@ export class LoginHelper extends BaseHelper {
     private accessToken = "";
     private refreshToken = "";
 
-    // Exponential backoff state for login/refresh retries.
+    // Track consecutive login failures (reset on success).
     private retryCount = 0;
-    private static readonly BASE_RETRY_MS = 30_000;   // 30 s
-    private static readonly MAX_RETRY_MS = 300_000;    // 5 min
 
     // Guard against concurrent refresh attempts (e.g. multiple API callers
     // all detecting "token invalid" at once).
@@ -164,20 +162,15 @@ export class LoginHelper extends BaseHelper {
     }
 
     /**
-     * Retry login with exponential backoff: 30 s → 60 s → 120 s → ... up to 5 min.
+     * Called when login fails. Logs the error and increments backoff state.
+     * Retry scheduling is handled by the caller (TuyaIRDiscovery) to ensure
+     * the discovery chain stays connected.
      */
     private handleLoginError(errorMessage: string) {
-        const delayMs = Math.min(
-            LoginHelper.BASE_RETRY_MS * Math.pow(2, this.retryCount),
-            LoginHelper.MAX_RETRY_MS,
-        );
         this.retryCount++;
         this.log.error(
             `Failed to login due to error '${errorMessage}'. ` +
-            `Retry ${this.retryCount} in ${Math.round(delayMs / 1000)}s...`,
+            `(attempt ${this.retryCount})`,
         );
-        setTimeout(() => {
-            this.login();
-        }, delayMs);
     }
 }

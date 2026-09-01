@@ -8,6 +8,9 @@ const events_1 = __importDefault(require("events"));
 const TuyaIRConfiguration_1 = require("./model/TuyaIRConfiguration");
 const LoginHelper_1 = require("./api/LoginHelper");
 const DeviceConfigurationHelper_1 = require("./api/DeviceConfigurationHelper");
+const MAX_LOGIN_RETRIES = 10;
+const BASE_RETRY_MS = 30000;
+const MAX_RETRY_MS = 300000;
 class TuyaIRDiscovery extends events_1.default {
     constructor(log, platformConfig) {
         super();
@@ -19,15 +22,27 @@ class TuyaIRDiscovery extends events_1.default {
         const configuration = new TuyaIRConfiguration_1.TuyaIRConfiguration(this.platformConfig, index);
         const loginHelper = LoginHelper_1.LoginHelper.Instance(configuration, this.log);
         const deviceConfigHelper = DeviceConfigurationHelper_1.DeviceConfigurationHelper.Instance(configuration, this.log);
-        loginHelper.login()
-            .then(() => {
-            this.log.info("Fetching configured remotes...");
-            return deviceConfigHelper.fetchDevices(configuration.irDeviceId);
-        }).then((devs) => {
-            cb(devs, index);
-        }).catch(error => {
-            this.log.error("Failed because of " + error);
-        });
+        const attemptDiscovery = (retryCount) => {
+            loginHelper.login()
+                .then(() => {
+                this.log.info("Fetching configured remotes...");
+                return deviceConfigHelper.fetchDevices(configuration.irDeviceId);
+            }).then((devs) => {
+                cb(devs, index);
+            }).catch(error => {
+                if (retryCount < MAX_LOGIN_RETRIES) {
+                    const delayMs = Math.min(BASE_RETRY_MS * Math.pow(2, retryCount), MAX_RETRY_MS);
+                    this.log.warn(`Discovery login failed (attempt ${retryCount + 1}/${MAX_LOGIN_RETRIES}): ${error}. ` +
+                        `Retrying in ${Math.round(delayMs / 1000)}s...`);
+                    setTimeout(() => attemptDiscovery(retryCount + 1), delayMs);
+                }
+                else {
+                    this.log.error(`Discovery for index ${index} failed after ${MAX_LOGIN_RETRIES} attempts. ` +
+                        `Accessories will be stale until Homebridge restarts. Last error: ${error}`);
+                }
+            });
+        };
+        attemptDiscovery(0);
     }
 }
 exports.TuyaIRDiscovery = TuyaIRDiscovery;

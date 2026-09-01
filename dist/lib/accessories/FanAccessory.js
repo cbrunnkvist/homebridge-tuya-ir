@@ -50,20 +50,18 @@ class FanAccessory extends BaseAccessory_1.BaseAccessory {
         });
     }
     setOn(value) {
-        if (this.fanStates.On != value) {
-            this.sendFanCommand(this.powerCommand, (body) => {
-                if (!body.success) {
-                    this.log.error(`Failed to change Fan status due to error ${body.msg}`);
+        this.sendFanCommand(this.powerCommand, (body) => {
+            if (!body.success) {
+                this.log.error(`Failed to change Fan status due to error ${body.msg}`);
+            }
+            else {
+                this.log.info(`${this.accessory.displayName} is now ${value == 0 ? 'Off' : 'On'}`);
+                this.fanStates.On = value;
+                if (this.fanStates.On) {
+                    this.service.updateCharacteristic(this.platform.Characteristic.RotationSpeed, 50);
                 }
-                else {
-                    this.log.info(`${this.accessory.displayName} is now ${value == 0 ? 'Off' : 'On'}`);
-                    this.fanStates.On = value;
-                    if (this.fanStates.On) {
-                        this.service.updateCharacteristic(this.platform.Characteristic.RotationSpeed, 50);
-                    }
-                }
-            });
-        }
+            }
+        });
     }
     getOn() {
         return this.fanStates.On;
@@ -137,7 +135,11 @@ class FanAccessory extends BaseAccessory_1.BaseAccessory {
     }
     sendFanCommand(command, cb) {
         const commandObj = { [this.sendCommandKey]: command };
+        this.log.info(`Sending fan command: ${this.sendCommandKey}=${command} to ${this.accessory.displayName}`);
         APIInvocationHelper_1.APIInvocationHelper.invokeTuyaIrApi(this.log, this.configuration, this.sendCommandAPIURL, "POST", commandObj, (body) => {
+            if (!body.success) {
+                this.log.error(`Fan command ${this.sendCommandKey}=${command} failed for ${this.accessory.displayName}: ${body.msg}`);
+            }
             cb(body);
         });
     }

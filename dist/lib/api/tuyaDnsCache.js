@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.cachedLookup = exports.flushDnsCache = void 0;
+exports.flushDnsCache = flushDnsCache;
+exports.cachedLookup = cachedLookup;
 const node_dns_1 = __importDefault(require("node:dns"));
 // Policy TTL: Node doesn't expose authoritative DNS TTL via dns.lookup().
 // Keep conservative to avoid pinning to a bad Tuya LB IP for too long.
@@ -21,7 +22,6 @@ function flushDnsCache(hostname) {
     cache.delete(makeKey(hostname, 4));
     cache.delete(makeKey(hostname, 6));
 }
-exports.flushDnsCache = flushDnsCache;
 /**
  * Drop-in `lookup` function for https.request({ lookup }).
  *
@@ -85,5 +85,4 @@ function cachedLookup(hostname, options, cb) {
         }
     });
 }
-exports.cachedLookup = cachedLookup;
 //# sourceMappingURL=tuyaDnsCache.js.map

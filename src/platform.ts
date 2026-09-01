@@ -71,6 +71,9 @@ export class TuyaIRPlatform implements DynamicPlatformPlugin {
     if (!this.config.tuyaAPIClientId) return this.log.error("Client ID is not configured. Please check your config.json");
     if (!this.config.tuyaAPISecret) return this.log.error("Client Secret is not configured. Please check your config.json");
     if (!this.config.deviceRegion) return this.log.error("Region is not configured. Please check your config.json");
+    if (!Array.isArray(this.config.smartIR) || this.config.smartIR.length === 0) {
+      return this.log.error("No Smart IR devices are configured. Please check your config.json");
+    }
     //if (!this.config.deviceId) return this.log.error("IR Blaster device ID is not configured. Please check your config.json");
 
     this.log.info('Starting discovery...');

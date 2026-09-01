@@ -152,7 +152,9 @@ export class LoginHelper extends BaseHelper {
             clearTimeout(this.refreshTimer);
         }
         this.refreshTimer = setTimeout(() => {
-            this.refreshAccessToken();
+            this.refreshAccessToken().catch((error) => {
+                this.log.error(`Proactive token refresh failed: ${error}`);
+            });
         }, (refreshInterval - 5) * 1000);
     }
 

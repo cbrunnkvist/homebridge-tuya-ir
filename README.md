@@ -29,6 +29,12 @@ Control your Tuya Smart IR based devices in HomeKit. Also works with Smart Home 
 * DIY Devices. Each learned button will be added a switch.
 * All other Pre-configured remotes will be added as switch to turn them on and off only. No other feature. (No DIY devices)
 
+## Difference from `@homebridge-plugins/homebridge-tuya`
+
+This plugin controls Tuya IR Blaster hubs and the appliances controlled by their infrared remotes. It uses Tuya's IR-specific `/v2.0/infrareds/` and related remote-control endpoints. It supports air conditioners, fans, lights, and learned DIY buttons.
+
+The verified `@homebridge-plugins/homebridge-tuya` plugin targets Tuya's general device API for network-connected Tuya devices such as lights, switches, and sensors. It does not replace this plugin's IR hub and remote functionality.
+
 ## Installation Instructions
 
 #### Option 1: Install via Homebridge Config UI X:

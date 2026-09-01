@@ -1,6 +1,5 @@
-/// <reference types="node" />
-declare type LookupCallback = (err: NodeJS.ErrnoException | null, address: string, family: number) => void;
-declare type LookupAllCallback = (err: NodeJS.ErrnoException | null, addresses: Array<{
+type LookupCallback = (err: NodeJS.ErrnoException | null, address: string, family: number) => void;
+type LookupAllCallback = (err: NodeJS.ErrnoException | null, addresses: Array<{
     address: string;
     family: number;
 }>) => void;

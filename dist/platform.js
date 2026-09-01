@@ -64,6 +64,9 @@ class TuyaIRPlatform {
             return this.log.error("Client Secret is not configured. Please check your config.json");
         if (!this.config.deviceRegion)
             return this.log.error("Region is not configured. Please check your config.json");
+        if (!Array.isArray(this.config.smartIR) || this.config.smartIR.length === 0) {
+            return this.log.error("No Smart IR devices are configured. Please check your config.json");
+        }
         //if (!this.config.deviceId) return this.log.error("IR Blaster device ID is not configured. Please check your config.json");
         this.log.info('Starting discovery...');
         const tuya = new TuyaIRDiscovery_1.TuyaIRDiscovery(this.log, this.config);

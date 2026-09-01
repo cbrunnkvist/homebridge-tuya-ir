@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { Logger } from 'homebridge';
 import { URL } from 'url';
 import { TuyaIRConfiguration } from '../model/TuyaIRConfiguration';

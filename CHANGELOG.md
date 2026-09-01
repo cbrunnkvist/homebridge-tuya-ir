@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0]
+
+### Added
+- Node.js 22 and 24 verification CI coverage.
+- Deterministic discovery and configured Homebridge failure-path tests.
+
+### Changed
+- Restricted supported Node.js versions to 22 and 24.
+- Removed unused `request`, `http`, and `escape-html` dependencies.
+- Hardened discovery and token refresh error recovery.
+- Documented the plugin's IR-specific scope relative to the verified Tuya plugin.
+
 ## [1.3.2]
 
 ### Fixed

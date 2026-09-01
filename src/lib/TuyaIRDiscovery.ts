@@ -23,7 +23,10 @@ export class TuyaIRDiscovery extends EventEmitter {
         const deviceConfigHelper = DeviceConfigurationHelper.Instance(configuration, this.log);
 
         const attemptDiscovery = (retryCount: number) => {
-            loginHelper.login()
+            // Start from a microtask so synchronous setup failures enter the
+            // same recovery path as rejected login and discovery promises.
+            Promise.resolve()
+                .then(() => loginHelper.login())
                 .then(() => {
                     this.log.info("Fetching configured remotes...");
                     return deviceConfigHelper.fetchDevices(configuration.irDeviceId);

@@ -85,7 +85,7 @@ class APIInvocationHelper {
                     code === 'EHOSTUNREACH' ||
                     code === 'ENETUNREACH' ||
                     code === 'ECONNREFUSED') {
-                    tuyaDnsCache_1.flushDnsCache(host);
+                    (0, tuyaDnsCache_1.flushDnsCache)(host);
                 }
             }
             catch (_a) {

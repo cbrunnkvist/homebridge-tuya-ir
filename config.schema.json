@@ -24,6 +24,30 @@
         "default": "",
         "description": "Your Tuya IOT cloud project's secret"
       },
+      "tuyaProjects": {
+        "title": "Tuya Cloud Projects",
+        "type": "array",
+        "description": "Tuya cloud projects used for automatic API quota failover",
+        "items": {
+          "type": "object",
+          "properties": {
+            "clientId": {
+              "title": "Client ID",
+              "type": "string"
+            },
+            "secret": {
+              "title": "Client Secret",
+              "type": "string"
+            },
+            "region": {
+              "title": "Region",
+              "type": "string",
+              "default": "in"
+            }
+          },
+          "required": ["clientId", "secret"]
+        }
+      },
       "deviceRegion": {
         "title": "Device Region",
         "type": "string",

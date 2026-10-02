@@ -11,6 +11,7 @@ export declare class APIInvocationHelper {
         signKey: string;
     };
     static invokeTuyaIrApi(log: Logger, config: TuyaIRConfiguration, endpoint: string, method: string, body: object, callback: any): void;
+    private static invokeWithCurrentProject;
     private static calculateSign;
     private static stringToSign;
     /**
@@ -19,5 +20,6 @@ export declare class APIInvocationHelper {
      */
     private static readonly TOKEN_ERROR_CODES;
     private static isTokenError;
+    private static isQuotaError;
 }
 //# sourceMappingURL=APIInvocationHelper.d.ts.map

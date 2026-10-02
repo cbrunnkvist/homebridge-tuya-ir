@@ -24,9 +24,26 @@ class APIInvocationHelper {
         return this.calculateSign(url, config, 'GET', timestamp, false);
     }
     static invokeTuyaIrApi(log, config, endpoint, method, body, callback) {
-        log.debug(`Calling endpoint ${endpoint} with payload ${JSON.stringify(body)}`);
+        this.invokeWithCurrentProject(log, config, endpoint, method, body, callback, false);
+    }
+    static invokeWithCurrentProject(log, config, endpoint, method, body, callback, hasSwitched) {
+        log.debug(`Calling endpoint ${endpoint} with project ${config.tuyaAPIClientId}`);
+        const loginHelper = LoginHelper_1.LoginHelper.Instance(config, log);
+        const accessToken = loginHelper.getAccessToken();
+        if (!accessToken) {
+            loginHelper.login()
+                .then(() => {
+                this.invokeWithCurrentProject(log, config, endpoint, method, body, callback, hasSwitched);
+            })
+                .catch((err) => {
+                callback({
+                    success: false,
+                    msg: `Login failed: ${(err === null || err === void 0 ? void 0 : err.message) || err}`,
+                });
+            });
+            return;
+        }
         const timestamp = new Date().getTime();
-        const accessToken = LoginHelper_1.LoginHelper.Instance(config, log).getAccessToken();
         const bodyForSigning = method === 'GET' ? '' : JSON.stringify(body);
         const signedParameters = this.calculateSign(new url_1.URL(endpoint), config, method, timestamp, true, accessToken, bodyForSigning);
         const options = {
@@ -54,6 +71,24 @@ class APIInvocationHelper {
                 }
                 catch (error) {
                     jsonBody = { success: false, msg: `Unable to parse body because '${error}'` };
+                }
+                if (this.isQuotaError(jsonBody, incomingMsg.statusCode) &&
+                    !hasSwitched &&
+                    config.switchToNextProject()) {
+                    log.warn(`Tuya project hit its API limit. Switching to project ` +
+                        `${config.tuyaAPIClientId} and retrying...`);
+                    const newLoginHelper = LoginHelper_1.LoginHelper.Instance(config, log);
+                    newLoginHelper.login()
+                        .then(() => {
+                        this.invokeWithCurrentProject(log, config, endpoint, method, body, callback, true);
+                    })
+                        .catch((err) => {
+                        callback({
+                            success: false,
+                            msg: `Login to backup Tuya project failed: ${(err === null || err === void 0 ? void 0 : err.message) || err}`,
+                        });
+                    });
+                    return;
                 }
                 if (incomingMsg.statusCode != 200) {
                     log.error(`Api call failed with response code ${incomingMsg.statusCode} for endpoint ${endpoint}`);
@@ -116,6 +151,26 @@ class APIInvocationHelper {
     }
     static isTokenError(body) {
         return this.TOKEN_ERROR_CODES.has(body === null || body === void 0 ? void 0 : body.code);
+    }
+    static isQuotaError(body, statusCode) {
+        if (statusCode === 429) {
+            return true;
+        }
+        const message = String((body === null || body === void 0 ? void 0 : body.msg) ||
+            (body === null || body === void 0 ? void 0 : body.message) ||
+            (body === null || body === void 0 ? void 0 : body.error) ||
+            '').toLowerCase();
+        const quotaWords = [
+            'quota',
+            'rate limit',
+            'rate-limit',
+            'frequency limit',
+            'traffic limit',
+            'request limit',
+            'api limit',
+            'too many requests',
+        ];
+        return quotaWords.some((word) => message.includes(word));
     }
 }
 exports.APIInvocationHelper = APIInvocationHelper;

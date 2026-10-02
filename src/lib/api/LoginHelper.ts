@@ -6,7 +6,7 @@ import { APIInvocationHelper } from "./APIInvocationHelper";
 import { BaseHelper } from "./BaseHelper";
 
 export class LoginHelper extends BaseHelper {
-    private static _instance: LoginHelper;
+    private static instances: Map<string, LoginHelper> = new Map();
     private accessToken = "";
     private refreshToken = "";
 
@@ -25,15 +25,22 @@ export class LoginHelper extends BaseHelper {
     }
 
     public static Instance(config: TuyaIRConfiguration, log: Logger) {
+        const projectId = config.tuyaAPIClientId;
+
         // IMPORTANT: multiple smartIR entries create multiple TuyaIRConfiguration objects.
-        // LoginHelper is a singleton; refresh/login must not use stale config/log/region.
-        if (this._instance) {
-            this._instance.config = config;
-            this._instance.log = log;
-            this._instance.apiHost = `https://openapi.tuya${config.deviceRegion}.com`;
-            return this._instance;
+        // LoginHelper instances are keyed by project ID, so each project keeps its own token state.
+        let instance = this.instances.get(projectId);
+
+        if (!instance) {
+            instance = new this(config, log);
+            this.instances.set(projectId, instance);
+        } else {
+            instance.config = config;
+            instance.log = log;
+            instance.apiHost = `https://openapi.tuya${config.deviceRegion}.com`;
         }
-        return (this._instance = new this(config, log));
+
+        return instance;
     }
 
     getAccessToken() {
